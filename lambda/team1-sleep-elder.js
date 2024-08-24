@@ -11,14 +11,16 @@ exports.handler = async (event, context) => {
     },
     body: JSON.stringify({ message: "" }),
   };
-  
-  const { userId, sleep } = JSON.parse(event.body);
+
+  const { userId, nickname, sleep, familycode } = JSON.parse(event.body);
 
   const param = {
     TableName,
     Item: marshall({
       userId,
-      sleep
+      familycode,
+      nickname,
+      sleep,
     }),
   };
 

@@ -5,6 +5,11 @@ import Profile from '../views/Profile.vue'
 import User from '../views/User.vue'
 import Menu from '../views/templates/Menu.vue'
 import First from '../views/First.vue'
+import Register from '../views/Register.vue'
+import ElderRegister from '../views/ElderRegister.vue'
+import GardianRegister from '../views/GardianRegister.vue'
+import FamilyCodePage from '../views/FamilyCodePage.vue'
+
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
@@ -22,6 +27,38 @@ const router = createRouter({
       component: Home,
       meta: {
         title: 'Home'
+      }
+    },
+    {
+      path: '/GardianRegister',
+      name: 'GardianRegister',
+      component: GardianRegister,
+      meta: {
+        title: 'GardianRegister'
+      }
+    },
+    {
+      path: '/FamilyCodePage',
+      name: 'FamilyCodePage',
+      component: FamilyCodePage,
+      meta: {
+        title: 'Family Code'
+      }
+    },
+     {
+      path: '/ElderRegister',
+      name: 'ElderRegister',
+      component: ElderRegister,
+      meta: {
+        title: 'ElderRegister'
+      }
+    },
+     {
+      path: '/Register',
+      name: 'Register',
+      component: Register,
+      meta: {
+        title: 'Register'
       }
     },
     {
@@ -49,7 +86,7 @@ const router = createRouter({
         title: 'User'
       }
     },
-      
+    
     
   ]
 })

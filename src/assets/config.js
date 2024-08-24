@@ -1,2 +1,2 @@
 // 自分のエンドポイントに置き換えてください
-export const baseUrl = 'https://w278xet73i.execute-api.ap-northeast-1.amazonaws.com';
+export const baseUrl = 'https://65ws4zl4a5.execute-api.ap-northeast-1.amazonaws.com';
