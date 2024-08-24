@@ -1,7 +1,7 @@
 const { DynamoDBClient, QueryCommand } = require("@aws-sdk/client-dynamodb");
 const { marshall } = require("@aws-sdk/util-dynamodb");
 const client = new DynamoDBClient({ region: "ap-northeast-1" });
-const TableName = "User";
+const TableName = "Elder";
 
 exports.handler = async (event, context) => {
   const response = {
@@ -13,14 +13,14 @@ exports.handler = async (event, context) => {
   };
 
 
-if (event.headers.authorization !== "mtiToken") {
-    response.statusCode = 401;
-    response.body = JSON.stringify({
-      message: "認証されていません。HeaderにTokenを指定してください",
-    });
+// if (event.headers.authorization !== "mtiToken") {
+//     response.statusCode = 401;
+//     response.body = JSON.stringify({
+//       message: "認証されていません。HeaderにTokenを指定してください",
+//     });
 
-    return response;
-  }
+//     return response;
+//   }
 
   const body = event.body ? JSON.parse(event.body) : null;
   if (!body || !body.userId || !body.password) {
@@ -52,7 +52,7 @@ if (event.headers.authorization !== "mtiToken") {
     if (foundCount == 0) {
       throw new Error("userIdまたはpasswordが一致しません");
     }
-    response.body = JSON.stringify({ token: "mtiToken" });
+    response.body = JSON.stringify({ message: "success to login!!" });
   } catch (e) {
     if (e.message == "userIdまたはpasswordが一致しません") {
       response.statusCode = 401;

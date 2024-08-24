@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Menu />
+    <Menu v-if="$route.name !== 'First'"/>
     
     <router-view/>
   </div>
@@ -8,12 +8,16 @@
 
 <script>
   import {RouterView} from 'vue-router'
-  import Menu from '@/components/Menu.vue';
+  import Menu from '@/views/templates/Menu.vue';
   
   export default{
   name: 'App',
   components:{
   Menu
   },
+  
+  
+  
   }
+  
 </script>

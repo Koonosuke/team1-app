@@ -4,7 +4,7 @@ const {
 } = require("@aws-sdk/client-dynamodb");
 const { marshall } = require("@aws-sdk/util-dynamodb");
 const client = new DynamoDBClient({ region: "ap-northeast-1" });
-const TableName = "Article";
+const TableName = "Guardians";
 
 exports.handler = async (event, context) => {
   const response = {
@@ -16,22 +16,19 @@ exports.handler = async (event, context) => {
   };
 
 
-  if (event.headers.authorization !== "mtiToken") {
-    response.statusCode = 401;
-    response.body = JSON.stringify({
-      message: "認証されていません。HeaderにTokenを指定してください",
-    });
+  // if (event.headers.authorization !== "mtiToken") {
+  //   response.statusCode = 401;
+  //   response.body = JSON.stringify({
+  //     message: "認証されていません。HeaderにTokenを指定してください",
+  //   });
 
-    return response;
-  }
+  //   return response;
+  // }
 
   const userId = event.queryStringParameters?.userId;
-  const timestamp = parseInt(event.queryStringParameters?.timestamp)
+  // const timestamp = parseInt(event.queryStringParameters?.timestamp)
 
-
-
-
-  if (!userId || !timestamp) {
+  if (!userId) {
     response.statusCode = 400;
     response.body = JSON.stringify({
       message:
@@ -45,7 +42,6 @@ exports.handler = async (event, context) => {
     TableName,
     Key: marshall({
       userId,
-      timestamp,
     }),
 
   };
