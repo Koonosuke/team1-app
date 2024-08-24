@@ -14,6 +14,7 @@
         {{ errorMsg }}
       </p>
 
+
       <!-- 成功メッセージ用 -->
       <p class="ui positive message" v-if="successMsg">
         <i class="close icon" @click="clearMsg"></i>
@@ -28,18 +29,13 @@
             <textarea
               v-model="post.text"
               name="article-content"
-              placeholder="あなたの投稿を発信しましょう！"
+              placeholder="伝えたいメッセージ"
             />
           </div>
 
           <div class="inline field">
-            <label for="article-category">カテゴリー</label>
-            <input
-              v-model="post.category"
-              type="text"
-              id="article-category"
-              name="article-category"
-            />
+            <label for="article-time">伝える時間</label>
+            <input type="time" id="article-time" v-model="post.time" name="article-time"/>
           </div>
           <div class="right-align">
             <button
@@ -47,7 +43,7 @@
               v-bind:disabled="isPostButtonDisabled"
               type="submit"
             >
-              投稿
+              登録
             </button>
           </div>
         </form>
@@ -98,6 +94,7 @@ export default {
       post: {
         text: null,
         category: null,
+        time: null,  // timeフィールドを追加
       },
       articles: [],
       iam: null,
@@ -109,7 +106,7 @@ export default {
 
   computed: {
     isPostButtonDisabled() {
-      return !this.post.text;
+      return !this.post.text || !this.post.time;  // メッセージと時間が入力されていない場合は無効
     },
   },
 
@@ -174,6 +171,7 @@ export default {
         userId: this.iam,
         text: this.post.text,
         category: this.post.category,
+        time: this.post.time,
       };
       try {
         const res = await fetch(baseUrl + "/article", {
@@ -194,6 +192,7 @@ export default {
         this.successMsg = "記事が投稿されました！";
         this.post.text = "";
         this.post.category = "";
+        this.post.time = "";  // 投稿後に時間をリセット
       } catch (e) {
         console.error(e);
         this.errorMsg = e;

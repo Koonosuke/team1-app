@@ -1,7 +1,8 @@
 const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
 const { marshall } = require("@aws-sdk/util-dynamodb");//marshall: JavaScript オブジェクトを DynamoDB が理解できる形式（DynamoDB マップオブジェクト）に変換します。
 const client = new DynamoDBClient({ region: "ap-northeast-1" });
-const TableName = "User";
+
+const TableName = "Guardians";
 
 exports.handler = async (event, context) => {
   const response = {
@@ -12,20 +13,25 @@ exports.handler = async (event, context) => {
     body: JSON.stringify({ message: "" }),
   };
 
-  // TODO: リクエストボディの中身をJavaScriptオブジェクトに変換し、1つ、あるいは複数の変数に代入する
-  const { userId, age, nickname, password}= JSON.parse(event.body);// JavaScript オブジェクトに変換
+  const { userId, password, relation }= JSON.parse(event.body);// JavaScript オブジェクトに変
   
+  const length = 2
+  const familyCodeArray = Array.from({ length }, () => Math.floor(Math.random() * 100));
 
-  // TODO: DBに登録するための情報をparamオブジェクトとして宣言する（中身を記述）
+// 配列を文字列に変換し、その後整数に変換
+  const familyCodeString = familyCodeArray.join(''); // 配列を連結して文字列にする
+  const familycode = parseInt(familyCodeString, 10);
+
   const param = {
     TableName,
      Item:marshall({//marshall 関数を使って、JavaScript オブジェクトを DynamoDB 形式に変換
        userId,
-       age,
-       nickname,
        password,
+       relation,
+       familycode
      }),
   };
+ 
   // DBにデータを登録するコマンドを用意
   const command = new PutItemCommand(param);//PutItemCommand: DynamoDB テーブルにアイテムを追加するコマンドを作成します。param オブジェクトには、テーブル名と挿入するアイテムの情報が含まれru
 
@@ -34,7 +40,7 @@ exports.handler = async (event, context) => {
     await client.send(command);
     // TODO: 登録に成功した場合の処理を記載する。(status codeの設定と、response bodyの設定)
     response.statusCode=201;
-    response.body=JSON.stringify({userId,age,nickname});
+    response.body=JSON.stringify({userId, password, relation, familycode});
     
   } catch (e) {
     console.error(e);

@@ -108,7 +108,7 @@ export default {
       window.localStorage.setItem('userId', this.user.userId);
 
       // 成功時の処理
-      this.$router.push({ path: "/" }); // ホームページにリダイレクト
+      this.$router.push({ path: "/Home" }); // ホームページにリダイレクト
     } catch (e) {
       console.error(e);
       // エラー時の処理

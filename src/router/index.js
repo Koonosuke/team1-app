@@ -3,12 +3,21 @@ import Home from '../views/Home.vue'
 import Login from '../views/Login.vue';
 import Profile from '../views/Profile.vue'
 import User from '../views/User.vue'
-import Menu from '../components/Menu.vue'
+import Menu from '../views/templates/Menu.vue'
+import First from '../views/First.vue'
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
-    {
+      {
       path: '/',
+      name: 'First',
+      component: First,
+      meta: {
+        title: 'First'
+      }
+    },
+    {
+      path: '/Home',
       name: 'Home',
       component: Home,
       meta: {
