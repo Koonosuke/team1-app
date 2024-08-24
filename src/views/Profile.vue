@@ -1,141 +1,175 @@
 <template>
   <div>
     <div class="ui main container">
-      <!-- 基本的なコンテンツはここに記載する -->
-      <div class="ui segment">
-        <form class="ui large form" @submit.prevent="submit">
-          <div class="field">
-            <i class="user icon"></i>
-            <input v-model="user.userId" type="text" placeholder="ID"  required disabled>
-          </div>
-          
-          <div class="field">
-            <i class="lock icon"></i>
-            <input v-model="user.password" type="password" placeholder="Password" >
-          </div>
-          
-          <div class="field" >
-            <i class="tag icon"></i>
-            <input v-model="user.nickname" type="text" placeholder="Nickname" >
-          </div>
-          
-          <div class="field">
-            <i class="calendar icon"></i>
-            <input  v-model.number="user.age" type="text" placeholder="Age">
-          </div>
-           <button class="ui huge green fluid button" type="submit">
-       更新
-        </button>
-        </form>
+      <!-- loading表示用 -->
+      <div class="ui active inverted page dimmer" v-if="isCallingApi">
+        <div class="ui text loader">Loading</div>
       </div>
-     
+
+      <!-- エラーメッセージ用 -->
+      <p class="ui negative message" v-if="errorMsg">
+        <i class="close icon" @click="clearMsg('error')"></i>
+        <span class="header">エラーが発生しました！</span>
+        {{ errorMsg }}
+      </p>
+
+      <!-- 成功メッセージ用 -->
+      <p class="ui positive message" v-if="successMsg">
+        <i class="close icon" @click="clearMsg"></i>
+        <span class="header">成功！</span>
+        {{ successMsg }}
+      </p>
+
+      <!-- 投稿一覧 -->
+      <h3 class="ui dividing header">投稿一覧</h3>
+      <div class="ui segment">
+        <ul class="ui comments divided article-list">
+          <template v-for="(article, index) in articles" :key="index">
+            <li class="comment">
+              <div class="content">
+                <span class="author">{{ article.userId }}</span>
+                <div class="metadata">
+                  <span class="date">{{ convertToLocaleString(article.timestamp) }}</span>
+                </div>
+                <button
+                  v-if="isMyArticle(article.userId)"
+                  class="ui negative mini button right floated"
+                  @click="deleteArticle(article)"
+                >
+                  削除
+                </button>
+                <p class="text">
+                  {{ article.text }}
+                </p>
+                <span v-if="article.category" class="ui green label">{{ article.category }}</span>
+                <div class="ui divider"></div>
+              </div>
+            </li>
+          </template>
+        </ul>
+      </div>
     </div>
-    <button @click="deleteUser" class="ui huge gray fluid button" type="submit">
-   退会
-    </button>
   </div>
 </template>
 
 <script>
-// 必要なものはここでインポートする
-import {baseUrl} from '@/assets/config.js';
-// @は/srcの同じ意味です
-// import something from '@/components/something.vue';
+import { baseUrl } from "@/assets/config.js";
 
+const headers = { Authorization: "mtiToken" };
 
-
- 
 export default {
-  name: 'Profile',
- 
-  components: {
-    // 読み込んだコンポーネント名をここに記述する
-  },
- 
+  name: "Profile",
+  
   data() {
     return {
-    user: {
-        userId: window.localStorage.getItem("userId"),
-        password: null,
-        nickname: null,
-        age: null,
-      },
+      articles: [],
+      iam: null,
+      successMsg: "",
+      errorMsg: "",
+      isCallingApi: false,
     };
   },
- 
-  computed: {
-    // 計算した結果を変数として利用したいときはここに記述する
+
+  created: async function () {
+    if (
+      window.localStorage.getItem("userId") &&
+      window.localStorage.getItem("token")
+    ) {
+      this.iam = window.localStorage.getItem("userId");
+      await this.getArticles();
+    } else {
+      window.localStorage.clear();
+      this.$router.push({ name: "Login" });
+    }
   },
- 
+
   methods: {
-    async deleteUser() {
-      const headers = {"Authorization": "mtiToken"};
-      try{
-        const res = await fetch(`${baseUrl}/user?userId=${this.user.userID}`, {
-          method: "DELETE",
-          headers
-        })  
-        const text = await res.text();
-        const jsonData = text ? JSON.parse(text) : {};
-        if (!res.ok) {
-          const errorMessage = jsonData.message ?? "エラーメッセージがありません";
-          throw new Error(errorMessage);
-        }
-        this.$router.push({name: "Login"})
-      } catch(e){
+    clearMsg(target) {
+      if (target === "error") {
+        this.errorMsg = "";
+      } else {
+        this.successMsg = "";
       }
     },
-    async submit() {
-      const headers = {"Authorization": "mtiToken"};
-      const { userId, password, nickname, age } = this.user;
-      const reqBody = {
-        userId,
-        password,
-        nickname,
-        age
-      };
+
+    isMyArticle(id) {
+      return this.iam === id;
+    },
+
+    async getArticles() {
+      this.isCallingApi = true;
+
       try {
-        const res = await fetch(baseUrl + `/user`, {
-          method: "PUT",
-          body: JSON.stringify(reqBody),
-          headers
+        const res = await fetch(baseUrl + "/message/gardian", {
+          method: "GET",
+          headers,
         });
+
         const text = await res.text();
         const jsonData = text ? JSON.parse(text) : {};
+
         if (!res.ok) {
           const errorMessage = jsonData.message ?? "エラーメッセージがありません";
           throw new Error(errorMessage);
         }
-        console.log(jsonData);
-      } catch(e) {
-        console.error("エラーが発生しました:", e);
+
+        this.articles = jsonData.articles ?? [];
+      } catch (e) {
+        this.errorMsg = `記事一覧取得時にエラーが発生しました: ${e}`;
+      } finally {
+        this.isCallingApi = false;
       }
-    }
+    },
+
+    async deleteArticle(article) {
+      if (this.isCallingApi) {
+        return;
+      }
+      this.isCallingApi = true;
+
+      const { userId, timestamp } = article;
+      try {
+        const res = await fetch(
+          `${baseUrl}/message/gardian?userId=${userId}&timestamp=${timestamp}`,
+          {
+            method: "DELETE",
+            headers,
+          }
+        );
+
+        const text = await res.text();
+        const jsonData = text ? JSON.parse(text) : {};
+
+        if (!res.ok) {
+          const errorMessage = jsonData.message ?? "エラーメッセージがありません";
+          throw new Error(errorMessage);
+        }
+
+        const deleted = this.articles.findIndex(
+          (a) => a.userId === userId && a.timestamp === timestamp
+        );
+        this.articles.splice(deleted, 1);
+        this.successMsg = "記事が削除されました！";
+      } catch (e) {
+        console.error(e);
+        this.errorMsg = e;
+      } finally {
+        this.isCallingApi = false;
+      }
+    },
+
+    convertToLocaleString(timestamp) {
+      return new Date(timestamp).toLocaleString();
+    },
   },
- 
-  
-  created: async function() {
-    const headers = {"Authorization" : "mtiToken"}
-    try {
-     const res = await fetch(baseUrl + `/user?userId=${this.user.userId}`, {
-        method: 'GET',
-        headers
-      });
-      const text = await res.text()
-      const jsonData = text ? JSON.parse(text) : {}
-      if (!res.ok) {
-        const errorMessage = jsonData.message ?? "エラーメッセージがありません"
-        throw new Error(errorMessage)
-      }
-      this.user.nickname = jsonData.nickname
-      this.user.age = jsonData.age
-    } catch(e){
- 
-    }
-  }
-}
+};
 </script>
 
 <style scoped>
-/* このコンポーネントだけに適用するCSSはここに記述する */
+.article-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+}
 </style>

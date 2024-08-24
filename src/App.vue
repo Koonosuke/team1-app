@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <Menu v-if="$route.name !== 'First'"/>
+   <Menu v-if="$route.name !== 'First' && $route.name !== 'Register' && $route.name !== 'ElderRegister' && $route.name !== 'GardianRegister' && $route.name !== 'Login' && $route.name !== 'FamilyCodePage'"/>
+
     
     <router-view/>
   </div>

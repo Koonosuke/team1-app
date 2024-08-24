@@ -34,8 +34,8 @@
           </div>
 
           <div class="inline field">
-            <label for="article-time">伝える時間</label>
-            <input type="time" id="article-time" v-model="post.time" name="article-time"/>
+            <label for="article-category">カテゴリー</label>
+            <input type="category" id="article-category" v-model="post.category" name="article-category"/>
           </div>
           <div class="right-align">
             <button
@@ -48,43 +48,14 @@
           </div>
         </form>
       </div>
-
-      <!-- 投稿一覧 -->
-      <h3 class="ui dividing header">投稿一覧</h3>
-      <div class="ui segment">
-        <ul class="ui comments divided article-list">
-          <template v-for="(article, index) in articles" :key="index">
-            <li class="comment">
-              <div class="content">
-                <span class="author">{{ article.userId }}</span>
-                <div class="metadata">
-                  <span class="date">{{ convertToLocaleString(article.timestamp) }}</span>
-                </div>
-                <button
-                  v-if="isMyArticle(article.userId)"
-                  class="ui negative mini button right floated"
-                  @click="deleteArticle(article)"
-                >
-                  削除
-                </button>
-                <p class="text">
-                  {{ article.text }}
-                </p>
-                <span v-if="article.category" class="ui green label">{{ article.category }}</span>
-                <div class="ui divider"></div>
-              </div>
-            </li>
-          </template>
-        </ul>
-      </div>
-    </div>
+</div>
   </div>
 </template>
 
 <script>
 import { baseUrl } from "@/assets/config.js";
 
-const headers = { Authorization: "mtiToken" };
+//const headers = { Authorization: "mtiToken" };
 
 export default {
   name: "Home",
@@ -106,22 +77,22 @@ export default {
 
   computed: {
     isPostButtonDisabled() {
-      return !this.post.text || !this.post.time;  // メッセージと時間が入力されていない場合は無効
+      return !this.post.text || !this.post.category;  // メッセージと時間が入力されていない場合は無効
     },
   },
 
-  created: async function () {
-    if (
-      window.localStorage.getItem("userId") &&
-      window.localStorage.getItem("token")
-    ) {
-      this.iam = window.localStorage.getItem("userId");
-      await this.getArticles();
-    } else {
-      window.localStorage.clear();
-      this.$router.push({ name: "Login" });
-    }
-  },
+  //created: async function () {
+  //  if (
+  //    window.localStorage.getItem("userId") &&
+  //    window.localStorage.getItem("token")
+  //  ) {
+  //    this.iam = window.localStorage.getItem("userId");
+  //    await this.getArticles();
+  //  } else {
+  //    window.localStorage.clear();
+  //    this.$router.push({ name: "Login" });
+  //  }
+  //},
 
   methods: {
     clearMsg(target) {
@@ -134,31 +105,6 @@ export default {
 
     isMyArticle(id) {
       return this.iam === id;
-    },
-
-    async getArticles() {
-      this.isCallingApi = true;
-
-      try {
-        const res = await fetch(baseUrl + "/articles", {
-          method: "GET",
-          headers,
-        });
-
-        const text = await res.text();
-        const jsonData = text ? JSON.parse(text) : {};
-
-        if (!res.ok) {
-          const errorMessage = jsonData.message ?? "エラーメッセージがありません";
-          throw new Error(errorMessage);
-        }
-
-        this.articles = jsonData.articles ?? [];
-      } catch (e) {
-        this.errorMsg = `記事一覧取得時にエラーが発生しました: ${e}`;
-      } finally {
-        this.isCallingApi = false;
-      }
     },
 
     async postArticle() {
@@ -174,10 +120,10 @@ export default {
         time: this.post.time,
       };
       try {
-        const res = await fetch(baseUrl + "/article", {
+        const res = await fetch(baseUrl + "/message/gardian", {
           method: "POST",
           body: JSON.stringify(reqBody),
-          headers,
+         
         });
 
         const text = await res.text();
@@ -213,7 +159,7 @@ export default {
           `${baseUrl}/article?userId=${userId}&timestamp=${timestamp}`,
           {
             method: "DELETE",
-            headers,
+            
           }
         );
 
