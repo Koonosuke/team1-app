@@ -1,182 +1,115 @@
 <template>
-  <div>
-    <div class="ui main container main-container">
-      <div class="message-cards">
-        <div class="message-gardian">
-          <p class="time">11:00</p>
-          <p class="text">おはよう! 起きた？</p>
-        </div>
-        
-        <div class="message-elder">
-          <p class="time">11:00</p>
-          <p class="elder-response">はい!</p>
-        </div>
-      </div>
-            <div class="message-cards">
-        <div class="message-gardian">
-          <p class="time">11:00</p>
-          <p class="text">おはよう!</p>
-        </div>
-        
-        <div class="message-elder">
-          <p class="time">11:00</p>
-          <p class="elder-response">いいえ!</p>
-        </div>
-      </div>
-      <!-- 基本的なコンテンツはここに記載する -->
-      <!--<div class="ui segment">-->
-      <!--  <form class="ui form">-->
-      <!--    <div class="field">-->
-      <!--      <label for="nickname">ユーザー名</label>-->
-      <!--      <input v-model="nickname" type="text" name="nickname" placeholder="Nickname" />-->
-      <!--    </div>-->
-
-      <!--    <div class="field">-->
-      <!--      <label>年齢</label>-->
-      <!--      <div class="inline fields">-->
-      <!--        <div class="field">-->
-      <!--          <input v-model.number="start" type="text" name="agestart" />-->
-      <!--          <label for="agestart">歳から</label>-->
-      <!--        </div>-->
-
-      <!--        <div class="field">-->
-      <!--          <input v-model.number="end" type="text" name="ageend" />-->
-      <!--          <label for="ageend">歳まで</label>-->
-      <!--        </div>-->
-      <!--      </div>-->
-      <!--    </div>-->
-      <!--  </form>-->
-      <!--</div>-->
-        <!-- ユーザー一覧 -->
-      <!--<ul class="ui three column grid">-->
-      <!--  <template v-for="(item, index) in filteredUsers" :key="index">-->
-      <!--    <li class="column">-->
-      <!--      <div class="ui card fluid">-->
-      <!--        <div class="content">-->
-      <!--          <h2 class="header">-->
-      <!--            {{ item.nickname }}-->
-      <!--            <span class="ui green label">{{ item.age }}</span>-->
-      <!--          </h2>-->
-      <!--          <span class="meta">{{ item.userId }} </span>-->
-      <!--        </div>-->
-      <!--      </div>-->
-      <!--    </li>-->
-      <!--  </template>-->
-      <!--</ul>-->
+  <div class="user-container">
+    <h3 class="ui dividing header">リマインダーの回答</h3>
+    <div class="ui segment">
+      <ul class="ui comments divided response-list">
+        <li v-for="(response, index) in responses" :key="index" class="comment">
+          <div class="message-content">
+            <p class="text">{{ response.messageContent }}</p>
+            <span class="ui green label">{{ response.reservationTime }}</span>
+          </div>
+          <div class="response-status">
+            <span class="ui label">{{ getElderResponse(response.elderResponse) }}</span>
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 
-
 <script>
-  
-  import { baseUrl } from "@/assets/config.js";
-  const headers = { Authorization: "mtiToken" };
 export default {
   name: 'User',
-
   data() {
     return {
-      users: [],
-      nickname: "",
-      start: 0,
-      end: 100,
+      responses: [],
     };
   },
-
-  mounted() {
-
-    console.log("Filtered Users:", this.filteredUsers);
+  created() {
+    const storedResponses = localStorage.getItem('responses');
+    this.responses = storedResponses ? JSON.parse(storedResponses) : [];
   },
-
-  computed: {
-    filteredUsers() {
-      return this.users.filter(e => {
-        const matchNickname = this.nickname ? e.nickname?.match(this.nickname) : true;
-        const withinAgeRange = (
-          (this.start ? e.age >= this.start : true) &&
-          (this.end ? e.age <= this.end : true)
-        );
-
-        return matchNickname && withinAgeRange;
-      });
-    }
-  },
-
   methods: {
-    // Vue.jsで使う関数はここで記述する
-    
-  },
-}
+    getElderResponse(value) {
+      return value ? 'はい' : 'いいえ';
+    }
+  }
+};
 </script>
 
-
 <style scoped>
-/* このコンポーネントだけに適用するCSSはここに記述する */
-.main-container {
-  width: 80%;
-  height: 700px;
-  background-color: white;
-  margin: 0 auto; /* 中央に配置するため */
-  padding: 20px; /* 内側の余白 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 影をつける */
-  border-radius: 8px; /* 角を丸くする */
-}
-
-.message-cards {
+.user-container {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.message-gardian {
-  width: 50%;
-  background-color: lightgreen;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
   align-items: center;
-  letter-spacing: 2px;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
+  padding: 20px;
 }
 
-.time {
-  font-weight: bold;
-  padding: 10px 8px;
-  width: 30%;
-  height: 100%;
-  margin: 0 5px;
-  border-radius: 20px;
-}
-
-.text {
-  font-size: 15px;
-  font-weight: bold;
-  letter-spacing: 1px;
-  text-align: start;
+.ui.segment {
   width: 100%;
-  height: 100%;
-  padding: 5px;
+  max-width: 800px;
+  padding: 20px;
 }
 
-.message-elder {
-  width: 30%;
-  height: auto;
-  background-color: lightgreen;
+.ui.comments {
+  list-style-type: none;
+  padding: 0;
+  width: 100%;
+}
+.comment {
+  padding: 10px 15px;
+  border-radius: 15px;
+  margin-bottom: 15px;
+  background-color: #f1f1f1;
+  position: relative;
+  max-width: 80%;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  letter-spacing: 2px;
-  border-radius: 30px;
-  margin-left: auto;
+  justify-content: space-between; /* Ensure the content is spread out */
+  align-items: center; /* Center content vertically */
 }
-.elder-response {
-  width: 70%;
-  text-align: start;
+
+.comment .message-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.comment .text {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.comment .ui.green.label {
+  background-color: #4caf50;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 12px;
   font-weight: bold;
+  display: inline-block;
+  margin-bottom: 10px;
 }
+
+.comment .response-status {
+  display: flex;
+  justify-content: flex-end; /* Aligns the status label to the right */
+}
+
+.comment .response-status .ui.label {
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 12px;
+  background-color: #ddd;
+}
+
+.comment::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 10px;
+  border-width: 10px;
+  border-style: solid;
+  border-color: transparent transparent #f1f1f1 transparent;
+}
+
 </style>

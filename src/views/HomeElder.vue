@@ -6,8 +6,8 @@
         <p>{{ currentTime }}</p>
       </button>
       <div class="button-group">
-        <button class="ui green button" @click="toggleSleep">起きる</button>
-        <button class="ui blue button" @click="toggleSleep">寝る</button>
+        <button class="ui green button" @click="toggleSleep(false)">起きる</button>
+        <button class="ui blue button" @click="toggleSleep(true)">寝る</button>
       </div>
     </div>
 
@@ -71,12 +71,9 @@ export default {
 
   mounted() {
     this.updateTime();
-    this.timeInterval=setInterval(()=> {
-    this.updateTime();
-    },1000);
-    this.messagesInterval = setInterval(() => {
+ 
       this.getMessages();
-    }, 3000); // 3秒ごとにメッセージを更新
+    
   },
 
   beforeDestroy() {
@@ -91,11 +88,9 @@ export default {
 
     async getMessages() {
       try {
-
         const res = await fetch(baseUrl + `/message/gardian?familycode=${this.familycode}`, {
           method: "GET",
         });
-
 
         const text = await res.text();
         const jsonData = text ? JSON.parse(text) : {};
@@ -108,54 +103,54 @@ export default {
         this.messages = jsonData ?? [];
       } catch (e) {
         this.errorMsg = `記事一覧取得時にエラーが発生しました: ${e}`;
-
       }
     },
     
-  async handleResponse(message, value) {
+async handleResponse(message, value) {
     const { familycode, sentAt, senderId, messageContent, reservationTime } = message;
     const reqbody = {
-      familycode: this.familycode,
-      sentAt,
-      senderId,
-      messageContent,
-      elderResponse: value,
-      reservationTime,
+        familycode: this.familycode,
+        sentAt,
+        senderId,
+        messageContent,
+        elderResponse: value,
+        reservationTime,
     };
   
     try {
-
-      const res = await fetch(baseUrl + `/message/elder`, {
-        method: "PUT",
-        body: JSON.stringify(reqbody),
-
-      });
+        const res = await fetch(baseUrl + `/message/elder`, {
+            method: "PUT",
+            body: JSON.stringify(reqbody),
+        });
   
-      if (!res.ok) {
-        const errorMessage = await res.text();
-        console.error(`Error: ${res.status} - ${errorMessage}`);
-        throw new Error(errorMessage);
-      }
+        if (!res.ok) {
+            const errorMessage = await res.text();
+            console.error(`Error: ${res.status} - ${errorMessage}`);
+            throw new Error(errorMessage);
+        }
+
+        // Save the response locally for display in User.vue
+        let responses = JSON.parse(localStorage.getItem('responses')) || [];
+        responses.push(reqbody);
+        localStorage.setItem('responses', JSON.stringify(responses));
   
-      console.log("Response recorded successfully!");
+        console.log("Response recorded successfully!");
     } catch (error) {
-      console.error("Error in handleResponse:", error);
+        console.error("Error in handleResponse:", error);
     }
-  },
+},
 
 
-    async toggleSleep() {
-      this.sleep = !this.sleep;
+
+    async toggleSleep( status ) {
       
       const reqbody = {
         userId: this.userId,
-        sleep: this.sleep,
+        sleep: false,
       };
 
       try {
-
         const res = await fetch(baseUrl + `/user/elder/sleeptoggle`, {
-
           method: "PUT",
           body: JSON.stringify(reqbody),
           headers: {
@@ -167,7 +162,7 @@ export default {
           const errorMessage = await res.text();
           throw new Error(errorMessage);
         }
-
+        
         console.log("Update successful!");
       } catch (error) {
         console.error("Error:", error);
@@ -306,6 +301,7 @@ export default {
 .no-button:hover {
   background-color: #d32f2f;
 }
-
 </style>
+
+
 

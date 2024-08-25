@@ -28,9 +28,7 @@
             </div>
           </div>
           <button class="ui green button" type="submit">
-
             ログイン
-
           </button>
         </form>
       </div>
@@ -51,7 +49,7 @@ export default {
       elder: {
         userId: null,
         nickname: null,
-        familycode: this.$route.query.familycode
+        familycode: null
       },
     };
   },
@@ -78,47 +76,11 @@ export default {
           window.localStorage.setItem("familycode", jsonData.familycode);
   
         // 成功時の処理
-        this.$router.push({ path: "/HomeElder" }); // ホームページにリダイレクト
-      } catch (e) {
-        console.error(e);
-        // エラー時の処理
-        alert(`ログインエラー: ${e.message}`);
-      }
-  }
-=======
-      const reqBody = {
-        userId: this.elder.userId,
-        nickname: this.elder.nickname,
-        familycode: this.elder.familycode,
-      };
-
-      try {
-        const res = await fetch(baseUrl + "/user/elder", {
-          method: "POST",
-          body: JSON.stringify(reqBody),
-        });
-
-        const text = await res.text();
-        const jsonData = text ? JSON.parse(text) : {};
-
-        if (!res.ok) {
-          const errorMessage =
-            jsonData.message ?? "エラーメッセージがありません";
-          throw new Error(errorMessage);
-        }
-        
-        this.$router.push({ 
-          name: 'HomeElder'
-        });
-        
-        window.localStorage.setItem("userId", jsonData.userId)
-        window.localStorage.setItem("familycode", jsonData.familycode)
-
-        // 成功時の処理
-        console.log(jsonData);
+     
         // 登録成功後、別のページにリダイレクトするなど
+        this.$router.push({ path: "/HomeElder" });
       } catch (e) {
-        console.error(e);
+        console.log(e);
         // エラー時の処理
       }
     },

@@ -34,7 +34,7 @@
                   <span class="date">{{ convertToLocaleString(message.sentAt) }}</span>
                 </div>
                 <button
-                  v-if="isMyArticle(message.userId)"
+                  
                   class="ui negative mini button right floated"
                   @click="deleteMessage(message)"
                 >
@@ -98,9 +98,6 @@ export default {
       }
     },
 
-    isMyArticle(id) {
-      return this.iam === id;
-    },
 
     async getMessages() {
       this.isCallingApi = true;
@@ -108,7 +105,6 @@ export default {
       try {
 
         const res = await fetch(baseUrl + `/message/gardian?familycode=${this.familycode}`, {
-
           method: "GET",
         });
 

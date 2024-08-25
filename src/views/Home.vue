@@ -14,10 +14,9 @@
         {{ errorMsg }}
       </p>
 
-
       <!-- 成功メッセージ用 -->
       <p class="ui positive message" v-if="successMsg">
-        <i class="close icon" @click="clearMsg"></i>
+        <i class="close icon" @click="clearMsg('success')"></i>
         <span class="header">成功！</span>
         {{ successMsg }}
       </p>
@@ -36,7 +35,7 @@
 
           <div class="inline field">
             <label for="reservationTime">通知時間</label>
-            <input type="time" id="reservationTime" v-model="message.reservationTime" name="article-category"/>
+            <input type="time" id="reservationTime" v-model="message.reservationTime" name="reservationTime"/>
           </div>
           <div class="right-align">
             <button
@@ -49,14 +48,12 @@
           </div>
         </form>
       </div>
-</div>
+    </div>
   </div>
 </template>
 
 <script>
 import { baseUrl } from "@/assets/config.js";
-
-//const headers = { Authorization: "mtiToken" };
 
 export default {
   name: "Home",
@@ -64,8 +61,8 @@ export default {
   data() {
     return {
       message: {
-        messageContent: null,
-        reservationTime: null,
+        messageContent: "",
+        reservationTime: "",
       },
       articles: [],
       userId: "",
@@ -83,18 +80,17 @@ export default {
   },
   
 
-  created: async function () {
-    if ( window.localStorage.getItem("userId") &&  window.localStorage.getItem("familycode")) {
+  created() {
+    if (window.localStorage.getItem("userId") && window.localStorage.getItem("familycode")) {
       this.userId = window.localStorage.getItem("userId");
-      this.familycode = window.localStorage.getItem("familycode")
-      console.log(this.userId, this.familycode)
+      this.familycode = window.localStorage.getItem("familycode");
+      console.log(this.userId, this.familycode);
     } else {
       window.localStorage.clear();
       this.$router.push({ name: "Login" });
     }
   },
 
- 
   methods: {
     clearMsg(target) {
       if (target === "error") {
@@ -104,13 +100,12 @@ export default {
       }
     },
     
-       limitMessageContent() {
+    limitMessageContent() {
       const maxLength = 20;
       if (this.message.messageContent.length > maxLength) {
         this.message.messageContent = this.message.messageContent.slice(0, maxLength);
       }
     },
-
 
     async postMessage() {
       if (this.isCallingApi) {
@@ -118,7 +113,6 @@ export default {
       }
       this.isCallingApi = true;
       
-
       const reqBody = {
         familycode: this.familycode,
         userId: this.userId,
@@ -129,29 +123,28 @@ export default {
       try {
         const res = await fetch(baseUrl + "/message/gardian", {
           method: "POST",
+
           body: JSON.stringify(reqBody),
-         
         });
 
         const text = await res.text();
         const jsonData = text ? JSON.parse(text) : {};
 
         if (!res.ok) {
-          const errorMessage = jsonData.message ?? "エラーメッセージがありません";
+          const errorMessage = jsonData.message || "エラーメッセージがありません";
           throw new Error(errorMessage);
         }
         
-        this.successMsg = "リマインダーを追加しました"
-        this.messageContent = ""
-        
+        console.log(this.message.reservationTime)
+        this.successMsg = "リマインダーを追加しました";
+        this.message.messageContent = "";  // 修正点
       } catch (e) {
         console.error(e);
-        this.errorMsg = e;
+        this.errorMsg = e.message;  // 修正点
       } finally {
         this.isCallingApi = false;
       }
     },
-
 
     convertToLocaleString(timestamp) {
       return new Date(timestamp).toLocaleString();

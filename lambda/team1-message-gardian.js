@@ -55,7 +55,7 @@ exports.handler = async (event, context) => {
       Item: marshall({
         familycode, // 家族を識別するためのコード
         senderId: userId,// メッセージを送った保護者のuserId
-        reservationTime,
+        reservationTime: reservationTime,
         messageContent,
         sentAt,
         response: null,

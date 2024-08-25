@@ -19,16 +19,16 @@ exports.handler = async (event, context) => {
     const respondedAt = new Date().toISOString();
 
     // 既存のメッセージが存在するか確認
-    const getParam = {
-      TableName,
-      Key: marshall({ familycode, sentAt }),
-    };
-    const getCommand = new GetItemCommand(getParam);
-    const getResult = await client.send(getCommand);
+    // const getParam = {
+    //   TableName,
+    //   Key: marshall({ familycode, sentAt }),
+    // };
+    // const getCommand = new GetItemCommand(getParam);
+    // const getResult = await client.send(getCommand);
 
-    if (!getResult.Item) {
-      throw new Error("Message does not exist");
-    }
+    // if (!getResult.Item) {
+    //   throw new Error("Message does not exist");
+    // }
 
     // メッセージを更新
     const updateParam = {
