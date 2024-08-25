@@ -9,8 +9,9 @@ import Register from '../views/Register.vue'
 import ElderRegister from '../views/ElderRegister.vue'
 import GardianRegister from '../views/GardianRegister.vue'
 import FamilyCodePage from '../views/FamilyCodePage.vue'
-import ElderLogin from '../views/ElderLogin.vue'
 import HomeElder from '../views/HomeElder.vue'
+import ElderLogin from '../views/ElderLogin.vue'
+
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -88,7 +89,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/profile',
+      path: '/Profile',
       name: 'Profile',
       component: Profile,
       meta:{
@@ -104,6 +105,23 @@ const router = createRouter({
         title: 'User'
       }
     },
+    {
+      path: '/homeElder',
+      name: 'HomeElder',
+      component: HomeElder,
+      meta: {
+        title: 'HomeElder'
+      }
+    },
+    {
+      path: '/ElderLogin',
+      name: 'ElderLogin',
+      component: ElderLogin,
+      meta: {
+        title: 'ElderLogin'
+      }
+    },
+    
     
     
   ]

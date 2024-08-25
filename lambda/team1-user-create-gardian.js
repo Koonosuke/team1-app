@@ -41,6 +41,7 @@ exports.handler = async (event, context) => {
     // TODO: 登録に成功した場合の処理を記載する。(status codeの設定と、response bodyの設定)
     response.statusCode=201;
     response.body=JSON.stringify({userId, password, relation, familycode});
+
     
   } catch (e) {
     console.error(e);

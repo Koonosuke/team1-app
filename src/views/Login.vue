@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="ui main container">
-      <!-- 基本的なコンテンツはここに記載する -->
+     <h1 class="ui header">見守り人ログイン</h1>
       <div class="ui segment">
         <h1>見守り人ログイン</h1>
         <form class="ui large form" @submit.prevent="submit">
@@ -22,7 +22,9 @@
      
     </div>
     <button @click="redirectToElderLogin()" class="ui huge gray fluid button" type="submit">
-    高齢者登録はこちら
+
+    高齢者ログインはこちら
+
     </button>
     <button @click="redirectToRegister()" class="ui huge gray fluid button" type="submit">
     新規登録
@@ -63,6 +65,14 @@ export default {
       this.$router.push({ path: "/Register" }); // 新規登録ページにリダイレクト
     },
     
+
+   redirectToElderLogin(){
+     this.$router.push({ path: "/ElderLogin" });
+    },
+    
+   
+   async submit() {
+
     redirectToElderLogin(){
      this.$router.push({ path: "/ElderLogin" });
     },
@@ -82,10 +92,32 @@ export default {
       const text = await res.text();
       const jsonData = text ? JSON.parse(text) : {};
 
-      if (!res.ok) {
-        const errorMessage = jsonData.message ?? "エラーメッセージがありません";
-        throw new Error(errorMessage);
+
+      try {
+        const res = await fetch(baseUrl + `/user/gardian/login?userId=${this.user.userId}&password=${this.user.password}`, {
+          method: "GET",
+        });
+  
+        const text = await res.text();
+        const jsonData = text ? JSON.parse(text) : {};
+  
+        if (!res.ok) {
+          const errorMessage = "userIdもしくはpasswordが正しくありません"?? "エラーメッセージがありません";
+          throw new Error(errorMessage);
+        }
+  
+        // トークンとユーザーIDを保存
+          window.localStorage.setItem("userId", jsonData.userId);
+          window.localStorage.setItem("familycode", jsonData.familycode);
+  
+        // 成功時の処理
+        this.$router.push({ path: "/Home" }); // ホームページにリダイレクト
+      } catch (e) {
+        console.error(e);
+        // エラー時の処理
+        alert(`ログインエラー: ${e.message}`);
       }
+
 
       // トークンとユーザーIDを保存
 
@@ -105,4 +137,8 @@ export default {
 
 <style scoped>
 /* このコンポーネントだけに適用するCSSはここに記述します */
+.ui.header{
+text-align: center;
+maegin-botton: 20px;
+}
 </style>

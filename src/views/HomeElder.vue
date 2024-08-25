@@ -91,9 +91,10 @@ export default {
 
     async getMessages() {
       try {
- const res = await fetch(`${baseUrl}/message/gardian?familycode=${this.familycode}`, {
-  method: "GET",
-});
+
+        const res = await fetch(baseUrl + `/message/gardian?familycode=${this.familycode}`, {
+          method: "GET",
+        });
 
 
         const text = await res.text();
@@ -123,12 +124,11 @@ export default {
     };
   
     try {
-      const res = await fetch(baseUrl + "/message/elder", {
+
+      const res = await fetch(baseUrl + `/message/elder`, {
         method: "PUT",
         body: JSON.stringify(reqbody),
-        headers: {
-          'Content-Type': 'application/json'
-        }
+
       });
   
       if (!res.ok) {
@@ -153,7 +153,9 @@ export default {
       };
 
       try {
-        const res = await fetch(baseUrl + "/user/elder/sleeptoggle", {
+
+        const res = await fetch(baseUrl + `/user/elder/sleeptoggle`, {
+
           method: "PUT",
           body: JSON.stringify(reqbody),
           headers: {
@@ -304,4 +306,6 @@ export default {
 .no-button:hover {
   background-color: #d32f2f;
 }
+
 </style>
+

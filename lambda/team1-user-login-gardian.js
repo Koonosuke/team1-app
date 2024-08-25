@@ -1,4 +1,5 @@
-const { DynamoDBClient, QueryCommand, GetItemCommand } = require("@aws-sdk/client-dynamodb");
+
+const { DynamoDBClient, GetItemCommand } = require("@aws-sdk/client-dynamodb");
 const { marshall, unmarshall } = require("@aws-sdk/util-dynamodb");
 const client = new DynamoDBClient({ region: "ap-northeast-1" });
 const TableName = "Guardians";

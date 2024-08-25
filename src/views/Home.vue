@@ -24,18 +24,19 @@
 
       <!-- 投稿ボックス -->
       <div class="ui segment">
-        <form class="ui form" @submit.prevent="postArticle">
+        <form class="ui form" @submit.prevent="postMessage">
           <div class="field">
             <textarea
-              v-model="post.text"
+              v-model="message.messageContent"
               name="article-content"
-              placeholder="伝えたいメッセージ"
+              placeholder="伝えたいメッセージ(20文字まで)"
+              @input="limitMessageContent"
             />
           </div>
 
           <div class="inline field">
-            <label for="article-category">カテゴリー</label>
-            <input type="category" id="article-category" v-model="post.category" name="article-category"/>
+            <label for="reservationTime">通知時間</label>
+            <input type="time" id="reservationTime" v-model="message.reservationTime" name="article-category"/>
           </div>
           <div class="right-align">
             <button
@@ -62,13 +63,13 @@ export default {
   
   data() {
     return {
-      post: {
-        text: null,
-        category: null,
-        time: null,  // timeフィールドを追加
+      message: {
+        messageContent: null,
+        reservationTime: null,
       },
       articles: [],
-      iam: null,
+      userId: "",
+      familycode: "",
       successMsg: "",
       errorMsg: "",
       isCallingApi: false,
@@ -77,23 +78,23 @@ export default {
 
   computed: {
     isPostButtonDisabled() {
-      return !this.post.text || !this.post.category;  // メッセージと時間が入力されていない場合は無効
+      return !this.message.messageContent || !this.message.reservationTime;  // メッセージと時間が入力されていない場合は無効
     },
   },
+  
 
-  //created: async function () {
-  //  if (
-  //    window.localStorage.getItem("userId") &&
-  //    window.localStorage.getItem("token")
-  //  ) {
-  //    this.iam = window.localStorage.getItem("userId");
-  //    await this.getArticles();
-  //  } else {
-  //    window.localStorage.clear();
-  //    this.$router.push({ name: "Login" });
-  //  }
-  //},
+  created: async function () {
+    if ( window.localStorage.getItem("userId") &&  window.localStorage.getItem("familycode")) {
+      this.userId = window.localStorage.getItem("userId");
+      this.familycode = window.localStorage.getItem("familycode")
+      console.log(this.userId, this.familycode)
+    } else {
+      window.localStorage.clear();
+      this.$router.push({ name: "Login" });
+    }
+  },
 
+ 
   methods: {
     clearMsg(target) {
       if (target === "error") {
@@ -102,23 +103,29 @@ export default {
         this.successMsg = "";
       }
     },
-
-    isMyArticle(id) {
-      return this.iam === id;
+    
+       limitMessageContent() {
+      const maxLength = 20;
+      if (this.message.messageContent.length > maxLength) {
+        this.message.messageContent = this.message.messageContent.slice(0, maxLength);
+      }
     },
 
-    async postArticle() {
+
+    async postMessage() {
       if (this.isCallingApi) {
         return;
       }
       this.isCallingApi = true;
+      
 
       const reqBody = {
-        userId: this.iam,
-        text: this.post.text,
-        category: this.post.category,
-        time: this.post.time,
+        familycode: this.familycode,
+        userId: this.userId,
+        messageContent: this.message.messageContent,
+        reservationTime: this.message.reservationTime,
       };
+      
       try {
         const res = await fetch(baseUrl + "/message/gardian", {
           method: "POST",
@@ -133,12 +140,10 @@ export default {
           const errorMessage = jsonData.message ?? "エラーメッセージがありません";
           throw new Error(errorMessage);
         }
-
-        this.articles.unshift({ ...reqBody, timestamp: Date.now() });
-        this.successMsg = "記事が投稿されました！";
-        this.post.text = "";
-        this.post.category = "";
-        this.post.time = "";  // 投稿後に時間をリセット
+        
+        this.successMsg = "リマインダーを追加しました"
+        this.messageContent = ""
+        
       } catch (e) {
         console.error(e);
         this.errorMsg = e;
