@@ -3,6 +3,7 @@
     <div class="ui main container">
      <h1 class="ui header">見守り人ログイン</h1>
       <div class="ui segment">
+        <h1>見守り人ログイン</h1>
         <form class="ui large form" @submit.prevent="submit">
           <div class="field">
             <i class="user icon"></i>
@@ -21,7 +22,9 @@
      
     </div>
     <button @click="redirectToElderLogin()" class="ui huge gray fluid button" type="submit">
+
     高齢者ログインはこちら
+
     </button>
     <button @click="redirectToRegister()" class="ui huge gray fluid button" type="submit">
     新規登録
@@ -62,12 +65,33 @@ export default {
       this.$router.push({ path: "/Register" }); // 新規登録ページにリダイレクト
     },
     
+
    redirectToElderLogin(){
      this.$router.push({ path: "/ElderLogin" });
     },
     
    
    async submit() {
+
+    redirectToElderLogin(){
+     this.$router.push({ path: "/ElderLogin" });
+    },
+    
+ async submit() {
+    const reqBody = {
+        userId: this.user.userId,
+        password: this.user.password
+    };
+
+    try {
+      const res = await fetch(baseUrl + "/user/gardian/login", {
+        method: "POST",
+        body: JSON.stringify(reqBody),
+      });
+
+      const text = await res.text();
+      const jsonData = text ? JSON.parse(text) : {};
+
 
       try {
         const res = await fetch(baseUrl + `/user/gardian/login?userId=${this.user.userId}&password=${this.user.password}`, {
@@ -93,6 +117,18 @@ export default {
         // エラー時の処理
         alert(`ログインエラー: ${e.message}`);
       }
+
+
+      // トークンとユーザーIDを保存
+
+      // 成功時の処理
+      this.$router.push({ path: "/Home" }); // ホームページにリダイレクト
+      
+    } catch (e) {
+      console.error(e);
+      // エラー時の処理
+      alert(`ログインエラー: ${e.message}`);
+    }
   }
 }
 

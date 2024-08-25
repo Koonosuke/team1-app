@@ -91,9 +91,11 @@ export default {
 
     async getMessages() {
       try {
+
         const res = await fetch(baseUrl + `/message/gardian?familycode=${this.familycode}`, {
           method: "GET",
         });
+
 
         const text = await res.text();
         const jsonData = text ? JSON.parse(text) : {};
@@ -106,6 +108,7 @@ export default {
         this.messages = jsonData ?? [];
       } catch (e) {
         this.errorMsg = `記事一覧取得時にエラーが発生しました: ${e}`;
+
       }
     },
     
@@ -121,9 +124,11 @@ export default {
     };
   
     try {
+
       const res = await fetch(baseUrl + `/message/elder`, {
         method: "PUT",
         body: JSON.stringify(reqbody),
+
       });
   
       if (!res.ok) {
@@ -148,7 +153,9 @@ export default {
       };
 
       try {
+
         const res = await fetch(baseUrl + `/user/elder/sleeptoggle`, {
+
           method: "PUT",
           body: JSON.stringify(reqbody),
           headers: {
@@ -299,7 +306,6 @@ export default {
 .no-button:hover {
   background-color: #d32f2f;
 }
+
 </style>
-
-
 

@@ -76,6 +76,9 @@ export default {
           name: 'FamilyCodePage',
           query: { familycode: jsonData.familycode }
         });
+        
+        window.localStorage.setItem("userId", jsonData.userId)
+        window.localStorage.setItem("familycode", jsonData.familycode)
 
         // 成功時の処理
         window.localStorage.setItem("userId", jsonData.userId);

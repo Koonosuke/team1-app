@@ -21,7 +21,9 @@
       </p>
 
       <!-- 投稿一覧 -->
+
       <h3 class="ui dividing header">リマインダー</h3>
+
       <div class="ui segment">
         <ul class="ui comments divided article-list">
           <template v-for="(message, index) in messages" :key="index">
@@ -61,8 +63,10 @@ export default {
   data() {
     return {
       messages: [],
+
       userId: "",
       familycode: "",
+
       successMsg: "",
       errorMsg: "",
       isCallingApi: false,
@@ -76,7 +80,9 @@ export default {
     ) {
       this.userId = window.localStorage.getItem("userId");
       this.familycode = window.localStorage.getItem("familycode");
+
       await this.getMessages();
+
     } else {
       window.localStorage.clear();
       this.$router.push({ name: "Login" });
@@ -100,7 +106,9 @@ export default {
       this.isCallingApi = true;
 
       try {
+
         const res = await fetch(baseUrl + `/message/gardian?familycode=${this.familycode}`, {
+
           method: "GET",
         });
 
@@ -112,7 +120,9 @@ export default {
           throw new Error(errorMessage);
         }
 
+
         this.messages = jsonData ?? [];
+
       } catch (e) {
         this.errorMsg = `記事一覧取得時にエラーが発生しました: ${e}`;
       } finally {

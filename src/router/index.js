@@ -12,6 +12,7 @@ import FamilyCodePage from '../views/FamilyCodePage.vue'
 import HomeElder from '../views/HomeElder.vue'
 import ElderLogin from '../views/ElderLogin.vue'
 
+
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
@@ -29,6 +30,22 @@ const router = createRouter({
       component: Home,
       meta: {
         title: 'Home'
+      }
+    },
+    {
+      path: '/HomeElder',
+      name: 'HomeElder',
+      component: HomeElder,
+      meta: {
+        title: 'HomeElder'
+      }
+    },
+    {
+      path: '/ElderLogin',
+      name: 'ElderLogin',
+      component: ElderLogin,
+      meta: {
+        title: 'ElderLogin'
       }
     },
     {

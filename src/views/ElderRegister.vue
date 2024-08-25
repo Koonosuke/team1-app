@@ -76,8 +76,10 @@ export default {
           name: 'HomeElder'
         });
         
+
         window.localStorage.setItem("userId", jsonData.userId);
         window.localStorage.setItem("familycode", jsonData.familycode);
+
 
         // 成功時の処理
         console.log(jsonData);

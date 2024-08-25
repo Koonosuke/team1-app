@@ -5,6 +5,7 @@
       <div class="ui segment">
         <!-- ここにセグメントの中身を記述する -->
         <h1>高齢者ログイン</h1>
+
         <form class="ui large form" @submit.prevent="submit">
           <div class="field">
             <div class="ui left icon input">
@@ -12,12 +13,14 @@
               <input type="text" placeholder="ID" v-model="elder.userId" />
             </div>
           </div>
+
           <!--<div class="field">-->
           <!--  <div class="ui left icon input">-->
           <!--    <i class="user icon"></i>-->
           <!--    <input type="text" placeholder="nickname" v-model="elder.nickname" />-->
           <!--  </div>-->
           <!--</div>-->
+
           <div class="field">
             <div class="ui left icon input">
               <i class="tag icon"></i>
@@ -25,7 +28,9 @@
             </div>
           </div>
           <button class="ui green button" type="submit">
+
             ログイン
+
           </button>
         </form>
       </div>
@@ -37,7 +42,9 @@
 import { baseUrl } from "@/assets/config.js";
 
 export default {
+
   name: 'ElderRegister',
+
 
   data() {
     return {
@@ -51,6 +58,7 @@ export default {
 
   methods: {
     async submit() {
+
 
       try {
         const res = await fetch(baseUrl + `/user/gardian/login?userId=${this.elder.userId}&password=${this.elder.familycode}`, {
@@ -77,6 +85,44 @@ export default {
         alert(`ログインエラー: ${e.message}`);
       }
   }
+=======
+      const reqBody = {
+        userId: this.elder.userId,
+        nickname: this.elder.nickname,
+        familycode: this.elder.familycode,
+      };
+
+      try {
+        const res = await fetch(baseUrl + "/user/elder", {
+          method: "POST",
+          body: JSON.stringify(reqBody),
+        });
+
+        const text = await res.text();
+        const jsonData = text ? JSON.parse(text) : {};
+
+        if (!res.ok) {
+          const errorMessage =
+            jsonData.message ?? "エラーメッセージがありません";
+          throw new Error(errorMessage);
+        }
+        
+        this.$router.push({ 
+          name: 'HomeElder'
+        });
+        
+        window.localStorage.setItem("userId", jsonData.userId)
+        window.localStorage.setItem("familycode", jsonData.familycode)
+
+        // 成功時の処理
+        console.log(jsonData);
+        // 登録成功後、別のページにリダイレクトするなど
+      } catch (e) {
+        console.error(e);
+        // エラー時の処理
+      }
+    },
+
   },
 }
 </script>
