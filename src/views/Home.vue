@@ -147,42 +147,6 @@ export default {
       }
     },
 
-    async deleteArticle(article) {
-      if (this.isCallingApi) {
-        return;
-      }
-      this.isCallingApi = true;
-
-      const { userId, timestamp } = article;
-      try {
-        const res = await fetch(
-          `${baseUrl}/article?userId=${userId}&timestamp=${timestamp}`,
-          {
-            method: "DELETE",
-            
-          }
-        );
-
-        const text = await res.text();
-        const jsonData = text ? JSON.parse(text) : {};
-
-        if (!res.ok) {
-          const errorMessage = jsonData.message ?? "エラーメッセージがありません";
-          throw new Error(errorMessage);
-        }
-
-        const deleted = this.articles.findIndex(
-          (a) => a.userId === userId && a.timestamp === timestamp
-        );
-        this.articles.splice(deleted, 1);
-        this.successMsg = "記事が削除されました！";
-      } catch (e) {
-        console.error(e);
-        this.errorMsg = e;
-      } finally {
-        this.isCallingApi = false;
-      }
-    },
 
     convertToLocaleString(timestamp) {
       return new Date(timestamp).toLocaleString();

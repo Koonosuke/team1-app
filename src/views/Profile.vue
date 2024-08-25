@@ -21,7 +21,7 @@
       </p>
 
       <!-- 投稿一覧 -->
-      <h3 class="ui dividing header">投稿一覧</h3>
+      <h3 class="ui dividing header">リマインダー一覧</h3>
       <div class="ui segment">
         <ul class="ui comments divided article-list">
           <template v-for="(article, index) in articles" :key="index">
@@ -55,15 +55,14 @@
 <script>
 import { baseUrl } from "@/assets/config.js";
 
-const headers = { Authorization: "mtiToken" };
-
 export default {
   name: "Profile",
   
   data() {
     return {
-      articles: [],
-      iam: null,
+      messages: [],
+      userId: null,
+      familycode: null,
       successMsg: "",
       errorMsg: "",
       isCallingApi: false,
@@ -73,9 +72,10 @@ export default {
   created: async function () {
     if (
       window.localStorage.getItem("userId") &&
-      window.localStorage.getItem("token")
+      window.localStorage.getItem("familycode")
     ) {
-      this.iam = window.localStorage.getItem("userId");
+      this.userId = window.localStorage.getItem("userId");
+      this.familycode = window.localStorage.getItem("familycode");
       await this.getArticles();
     } else {
       window.localStorage.clear();
@@ -100,9 +100,8 @@ export default {
       this.isCallingApi = true;
 
       try {
-        const res = await fetch(baseUrl + "/message/gardian", {
+        const res = await fetch(baseUrl + `/message/gardian?familycode=${familycode}`, {
           method: "GET",
-          headers,
         });
 
         const text = await res.text();
@@ -113,7 +112,7 @@ export default {
           throw new Error(errorMessage);
         }
 
-        this.articles = jsonData.articles ?? [];
+        this.messages = jsonData.messages ?? [];
       } catch (e) {
         this.errorMsg = `記事一覧取得時にエラーが発生しました: ${e}`;
       } finally {

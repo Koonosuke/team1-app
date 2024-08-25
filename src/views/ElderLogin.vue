@@ -4,28 +4,28 @@
       <!-- 基本的なコンテンツはここに記載する -->
       <div class="ui segment">
         <!-- ここにセグメントの中身を記述する -->
-        <h1>保護者登録</h1>
+        <h1>高齢者登録</h1>
         <form class="ui large form" @submit.prevent="submit">
           <div class="field">
             <div class="ui left icon input">
               <i class="user icon"></i>
-              <input type="text" placeholder="ID" v-model="guardian.userId" />
+              <input type="text" placeholder="ID" v-model="elder.userId" />
             </div>
           </div>
           <div class="field">
             <div class="ui left icon input">
-              <i class="lock icon"></i>
-              <input type="password" placeholder="Password" v-model="guardian.password" />
+              <i class="user icon"></i>
+              <input type="text" placeholder="nickname" v-model="elder.nickname" />
             </div>
           </div>
           <div class="field">
             <div class="ui left icon input">
               <i class="tag icon"></i>
-              <input type="text" placeholder="relation" v-model="guardian.relation" />
+              <input type="text" placeholder="familycode" v-model="elder.familycode" />
             </div>
           </div>
           <button class="ui green button" type="submit">
-            新規登録
+            登録
           </button>
         </form>
       </div>
@@ -37,29 +37,28 @@
 import { baseUrl } from "@/assets/config.js";
 
 export default {
-  name: 'GardianRegister',
+  name: 'ElderLogin',
 
   data() {
     return {
-      guardian: {
+      elder: {
         userId: null,
-        password: null,
-        relation: null
+        nickname: null,
+        familycode: this.$route.query.familycode
       },
-      familyCode: null,
     };
   },
 
   methods: {
     async submit() {
       const reqBody = {
-        userId: this.guardian.userId,
-        password: this.guardian.password,
-        relation: this.guardian.relation,
+        userId: this.elder.userId,
+        nickname: this.elder.nickname,
+        familycode: this.elder.familycode,
       };
 
       try {
-        const res = await fetch(baseUrl + "/user/gardian", {
+        const res = await fetch(baseUrl + "/user/elder", {
           method: "POST",
           body: JSON.stringify(reqBody),
         });
@@ -72,9 +71,9 @@ export default {
             jsonData.message ?? "エラーメッセージがありません";
           throw new Error(errorMessage);
         }
+        
         this.$router.push({ 
-          name: 'FamilyCodePage',
-          query: { familycode: jsonData.familycode }
+          name: 'HomeElder'
         });
         
         window.localStorage.setItem("userId", jsonData.userId)
@@ -82,6 +81,7 @@ export default {
 
         // 成功時の処理
         console.log(jsonData);
+        // 登録成功後、別のページにリダイレクトするなど
       } catch (e) {
         console.error(e);
         // エラー時の処理

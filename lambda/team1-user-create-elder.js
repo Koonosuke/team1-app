@@ -55,7 +55,7 @@ exports.handler = async (event, context) => {
 
     // 成功時のレスポンス設定
     response.statusCode = 201;
-    response.body = JSON.stringify({ message: "Elder registration successful." });
+    response.body = JSON.stringify({ userId, familycode});
 
   } catch (e) {
     console.error("Error details:", e);

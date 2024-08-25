@@ -16,13 +16,14 @@ exports.handler = async (event, context) => {
     const { familycode } = event.queryStringParameters;
 
     // Query を使用して、familycode に基づくすべてのメッセージを取得
-    const queryParams = {
-      TableName,
-      KeyConditionExpression: "familycode = :fc",
-      ExpressionAttributeValues: {
-        ":fc": { S: familycode },
-      },
-    };
+  const queryParams = {
+    TableName,
+    KeyConditionExpression: "familycode = :fc",
+    ExpressionAttributeValues: marshall({
+      ":fc": familycode,
+    }),
+  };
+
     
     const queryResult = await client.send(new QueryCommand(queryParams));
 
@@ -33,13 +34,10 @@ exports.handler = async (event, context) => {
     }
 
     // 取得したアイテムをすべてアンマーシャリングし、リストとして返す
-    const messages = queryResult.Items.map((item) => unmarshall(item));
+    const unmarshallMessages = queryResult.Items.map((item) => unmarshall(item));
 
     response.statusCode = 200;
-    response.body = JSON.stringify({
-      message: "Messages retrieved successfully",
-      data: messages,
-    });
+    response.body = JSON.stringify(unmarshallMessages);
 
   } catch (e) {
     console.error("Error details:", e);
