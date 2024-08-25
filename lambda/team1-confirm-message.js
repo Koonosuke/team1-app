@@ -25,6 +25,7 @@ exports.handler = async (event, context) => {
       TableName,
       Key: marshall({ familyId, messageId }),
     };
+    
     const getResult = await client.send(new GetItemCommand(getParam));
 
     if (!getResult.Item) {

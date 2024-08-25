@@ -21,27 +21,27 @@
       </p>
 
       <!-- 投稿一覧 -->
-      <h3 class="ui dividing header">投稿一覧</h3>
+      <h3 class="ui dividing header">リマインダー</h3>
       <div class="ui segment">
         <ul class="ui comments divided article-list">
-          <template v-for="(article, index) in articles" :key="index">
+          <template v-for="(message, index) in messages" :key="index">
             <li class="comment">
               <div class="content">
-                <span class="author">{{ article.userId }}</span>
+                <span class="author">{{ message.userId }}</span>
                 <div class="metadata">
-                  <span class="date">{{ convertToLocaleString(article.timestamp) }}</span>
+                  <span class="date">{{ convertToLocaleString(message.sentAt) }}</span>
                 </div>
                 <button
-                  v-if="isMyArticle(article.userId)"
+                  v-if="isMyArticle(message.userId)"
                   class="ui negative mini button right floated"
-                  @click="deleteArticle(article)"
+                  @click="deleteMessage(message)"
                 >
                   削除
                 </button>
                 <p class="text">
-                  {{ article.text }}
+                  {{ message.messageContent }}
                 </p>
-                <span v-if="article.category" class="ui green label">{{ article.category }}</span>
+                <span v-if="message.messageContent" class="ui green label">{{ message.reservationTime }}</span>
                 <div class="ui divider"></div>
               </div>
             </li>
@@ -55,15 +55,14 @@
 <script>
 import { baseUrl } from "@/assets/config.js";
 
-const headers = { Authorization: "mtiToken" };
-
 export default {
   name: "Profile",
   
   data() {
     return {
-      articles: [],
-      iam: null,
+      messages: [],
+      userId: "",
+      familycode: "",
       successMsg: "",
       errorMsg: "",
       isCallingApi: false,
@@ -73,10 +72,11 @@ export default {
   created: async function () {
     if (
       window.localStorage.getItem("userId") &&
-      window.localStorage.getItem("token")
+      window.localStorage.getItem("familycode")
     ) {
-      this.iam = window.localStorage.getItem("userId");
-      await this.getArticles();
+      this.userId = window.localStorage.getItem("userId");
+      this.familycode = window.localStorage.getItem("familycode");
+      await this.getMessages();
     } else {
       window.localStorage.clear();
       this.$router.push({ name: "Login" });
@@ -96,13 +96,12 @@ export default {
       return this.iam === id;
     },
 
-    async getArticles() {
+    async getMessages() {
       this.isCallingApi = true;
 
       try {
-        const res = await fetch(baseUrl + "/message/gardian", {
+        const res = await fetch(baseUrl + `/message/gardian?familycode=${this.familycode}`, {
           method: "GET",
-          headers,
         });
 
         const text = await res.text();
@@ -113,7 +112,7 @@ export default {
           throw new Error(errorMessage);
         }
 
-        this.articles = jsonData.articles ?? [];
+        this.messages = jsonData ?? [];
       } catch (e) {
         this.errorMsg = `記事一覧取得時にエラーが発生しました: ${e}`;
       } finally {
@@ -121,7 +120,7 @@ export default {
       }
     },
 
-    async deleteArticle(article) {
+    async deleteMessage(article) {
       if (this.isCallingApi) {
         return;
       }
@@ -168,7 +167,7 @@ export default {
 <style scoped>
 .article-list {
   list-style: none;
-  margin: 0;
+  margin-bottom: 10px;
   padding: 0;
   max-width: 100%;
 }

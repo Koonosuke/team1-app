@@ -21,7 +21,7 @@ exports.handler = async (event, context) => {
   };
 
   try {
-    const { familycode, userId, messageContent } = JSON.parse(event.body);
+    const { familycode, userId, messageContent, reservationTime } = JSON.parse(event.body);
  // 一意のメッセージIDを生成
     const sentAt = new Date().toISOString(); // 送信時刻をISO形式で記録
     
@@ -54,13 +54,16 @@ exports.handler = async (event, context) => {
       TableName,
       Item: marshall({
         familycode, // 家族を識別するためのコード
-        senderId: userId, // メッセージを送った保護者のuserId
+        senderId: userId,// メッセージを送った保護者のuserId
+        reservationTime,
         messageContent,
         sentAt,
+        response: null,
         respondedAt: null, // 高齢者が応答した時間
         status: "未回答",
       }),
     };
+    
 
     await client.send(new PutItemCommand(param));
 

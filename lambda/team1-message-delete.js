@@ -4,7 +4,7 @@ const {
 } = require("@aws-sdk/client-dynamodb");
 const { marshall } = require("@aws-sdk/util-dynamodb");
 const client = new DynamoDBClient({ region: "ap-northeast-1" });
-const TableName = "User";
+const TableName = "FamilyMessages";
 
 exports.handler = async (event, context) => {
   const response = {
@@ -15,14 +15,18 @@ exports.handler = async (event, context) => {
     body: JSON.stringify({ message: "" }),
   };
 
-  const userId = event.queryStringParameters?.userId;
+  const familycode = event.queryStringParameters?.familycode;
+  const sentAt = event.queryStringParameters?.sentAt;
+
+
 
   // TODO: 削除対象のテーブル名と削除したいデータのkeyをparamに設定
   const param = {
     TableName,
-    Key:marshall({
-      userId,
-    }),
+    Key: marshall({
+      familycode,
+      sentAt,
+    })
   };
 
   // データを削除するコマンドを用意
@@ -32,7 +36,8 @@ exports.handler = async (event, context) => {
     // client.send()を用いてデータを削除するコマンドを実行
     await client.send(command);
     // TODO: 成功後の処理を記載(status codeを指定する。)
-    response.statusCode=204;
+    response.statusCode = 204;
+    response.body = JSON.stringify({ message: "delete success" })
   } catch (e) {
     console.error(e);
     response.statusCode = 500;

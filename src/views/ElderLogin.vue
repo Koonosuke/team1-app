@@ -4,7 +4,7 @@
       <!-- 基本的なコンテンツはここに記載する -->
       <div class="ui segment">
         <!-- ここにセグメントの中身を記述する -->
-        <h1>高齢者登録</h1>
+        <h1>高齢者ログイン</h1>
         <form class="ui large form" @submit.prevent="submit">
           <div class="field">
             <div class="ui left icon input">
@@ -12,12 +12,12 @@
               <input type="text" placeholder="ID" v-model="elder.userId" />
             </div>
           </div>
-          <div class="field">
-            <div class="ui left icon input">
-              <i class="user icon"></i>
-              <input type="text" placeholder="nickname" v-model="elder.nickname" />
-            </div>
-          </div>
+          <!--<div class="field">-->
+          <!--  <div class="ui left icon input">-->
+          <!--    <i class="user icon"></i>-->
+          <!--    <input type="text" placeholder="nickname" v-model="elder.nickname" />-->
+          <!--  </div>-->
+          <!--</div>-->
           <div class="field">
             <div class="ui left icon input">
               <i class="tag icon"></i>
@@ -25,7 +25,7 @@
             </div>
           </div>
           <button class="ui green button" type="submit">
-            登録
+            ログイン
           </button>
         </form>
       </div>
@@ -51,42 +51,32 @@ export default {
 
   methods: {
     async submit() {
-      const reqBody = {
-        userId: this.elder.userId,
-        nickname: this.elder.nickname,
-        familycode: this.elder.familycode,
-      };
 
       try {
-        const res = await fetch(baseUrl + "/user/elder", {
-          method: "POST",
-          body: JSON.stringify(reqBody),
+        const res = await fetch(baseUrl + `/user/gardian/login?userId=${this.elder.userId}&password=${this.elder.familycode}`, {
+          method: "GET",
         });
-
+  
         const text = await res.text();
         const jsonData = text ? JSON.parse(text) : {};
-
+  
         if (!res.ok) {
-          const errorMessage =
-            jsonData.message ?? "エラーメッセージがありません";
+          const errorMessage = "userIdもしくはpasswordが正しくありません"?? "エラーメッセージがありません";
           throw new Error(errorMessage);
         }
-        
-        this.$router.push({ 
-          name: 'HomeElder'
-        });
-        
-        window.localStorage.setItem("userId", jsonData.userId);
-        window.localStorage.setItem("familycode", jsonData.familycode);
-
+  
+        // トークンとユーザーIDを保存
+          window.localStorage.setItem("userId", jsonData.userId);
+          window.localStorage.setItem("familycode", jsonData.familycode);
+  
         // 成功時の処理
-        console.log(jsonData);
-        // 登録成功後、別のページにリダイレクトするなど
+        this.$router.push({ path: "/HomeElder" }); // ホームページにリダイレクト
       } catch (e) {
         console.error(e);
         // エラー時の処理
+        alert(`ログインエラー: ${e.message}`);
       }
-    },
+  }
   },
 }
 </script>
