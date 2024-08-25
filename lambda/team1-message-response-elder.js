@@ -13,8 +13,8 @@ exports.handler = async (event, context) => {
     },
     body: JSON.stringify({}),
   };
-
-  try {
+  
+    try {
     const { familycode, sentAt, senderId, messageContent, elderResponse, reservationTime } = JSON.parse(event.body);
     const respondedAt = new Date().toISOString();
 
@@ -44,6 +44,7 @@ exports.handler = async (event, context) => {
         "#st": "status", // "status"は予約語なので、エイリアスを使う必要があります
       },
       ReturnValues: "ALL_NEW",
+      
     };
     const updateCommand = new UpdateItemCommand(updateParam);
     const updateResult = await client.send(updateCommand);

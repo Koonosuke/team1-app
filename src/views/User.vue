@@ -7,8 +7,12 @@
           <div class="message-content">
             <p class="text">{{ response.messageContent }}</p>
             <span class="ui green label">{{ response.reservationTime }}</span>
+            <p v-if="response.elderResponse" class="responded-at">
+              回答日時: {{ response.respondedAt }}
+            </p>
           </div>
           <div class="response-status">
+        
             <span class="ui label">{{ getElderResponse(response.elderResponse) }}</span>
           </div>
         </li>
@@ -18,6 +22,8 @@
 </template>
 
 <script>
+  
+  import { baseUrl } from "@/assets/config.js";
 export default {
   name: 'User',
   data() {
@@ -26,12 +32,40 @@ export default {
     };
   },
   created() {
-    const storedResponses = localStorage.getItem('responses');
-    this.responses = storedResponses ? JSON.parse(storedResponses) : [];
+    this.loadResponses();
   },
   methods: {
     getElderResponse(value) {
       return value ? 'はい' : 'いいえ';
+    },
+    async updateResponse(response, elderResponse) {
+      try {
+        const responseData = await fetch(baseUrl + '/message/elder', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            familycode: response.familycode,
+            sentAt: response.sentAt,
+            respondedAt: response.respondedAt,
+            elderResponse,
+          }),
+        });
+
+        const result = await responseData.json();
+        if (responseData.ok) {
+          this.loadResponses();
+        } else {
+          console.error('Failed to update response:', result.message);
+        }
+      } catch (error) {
+        console.error('Error updating response:', error);
+      }
+    },
+    loadResponses() {
+      const storedResponses = localStorage.getItem('responses');
+      this.responses = storedResponses ? JSON.parse(storedResponses) : [];
     }
   }
 };
@@ -64,8 +98,8 @@ export default {
   position: relative;
   max-width: 80%;
   display: flex;
-  justify-content: space-between; /* Ensure the content is spread out */
-  align-items: center; /* Center content vertically */
+  justify-content: space-between; 
+  align-items: center; 
 }
 
 .comment .message-content {
@@ -90,9 +124,15 @@ export default {
   margin-bottom: 10px;
 }
 
+.comment .responded-at {
+  font-size: 14px;
+  color: #666;
+}
+
 .comment .response-status {
   display: flex;
-  justify-content: flex-end; /* Aligns the status label to the right */
+  justify-content: flex-end; 
+
 }
 
 .comment .response-status .ui.label {

@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" >
     <div class="ui main container">
       <button class="time-block ui green button">
         <h3>現在の時刻</h3>
@@ -99,6 +99,7 @@ export default {
           const errorMessage = jsonData.message ?? "エラーメッセージがありません";
           throw new Error(errorMessage);
         }
+        
 
         this.messages = jsonData ?? [];
       } catch (e) {
@@ -133,20 +134,18 @@ async handleResponse(message, value) {
         let responses = JSON.parse(localStorage.getItem('responses')) || [];
         responses.push(reqbody);
         localStorage.setItem('responses', JSON.stringify(responses));
-  
+       
         console.log("Response recorded successfully!");
     } catch (error) {
         console.error("Error in handleResponse:", error);
     }
 },
 
-
-
-    async toggleSleep( status ) {
-      
+  async toggleSleep( status ) {
+  
       const reqbody = {
         userId: this.userId,
-        sleep: false,
+        sleep: status ? "寝た" : "起きた",
       };
 
       try {
@@ -162,6 +161,8 @@ async handleResponse(message, value) {
           const errorMessage = await res.text();
           throw new Error(errorMessage);
         }
+        
+        
         
         console.log("Update successful!");
       } catch (error) {
