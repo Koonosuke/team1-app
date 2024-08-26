@@ -48,7 +48,6 @@ exports.handler = async (event, context) => {
     };
     const updateCommand = new UpdateItemCommand(updateParam);
     const updateResult = await client.send(updateCommand);
-
     // 成功時のレスポンス
     response.body = JSON.stringify({
       message: "Message updated successfully",

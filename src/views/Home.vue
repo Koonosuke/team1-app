@@ -43,6 +43,7 @@
               v-bind:disabled="isPostButtonDisabled"
               type="submit"
             >
+              <i class="bell icon"></i>
               登録
             </button>
           </div>
