@@ -21,7 +21,7 @@
               <div class="content-container">
                 <span class="author">{{ message.userId }}</span>
                 <p class="text">{{ message.messageContent }}</p>
-                <span v-if="message.messageContent" class="ui green label">{{ message.reservationTime }}</span>
+                <span v-if="message.messageContent" class="ui green label reservationTime">{{ message.reservationTime }}</span>
               </div>
               <div class="button-container">
                 <button class="ui button yes-button"  @click="handleResponse(message, true)">はい</button>
@@ -51,7 +51,7 @@ export default {
       familycode: null,
       messages: [],
       currentTime: "",
-      errorMsg: "",  // To handle errors
+      errorMsg: "",  
     };
   },
 
@@ -123,26 +123,30 @@ async handleResponse(message, value) {
             method: "PUT",
             body: JSON.stringify(reqbody),
         });
+        
+        const text = await res.text();
+        const jsonData = text ? JSON.parse(text) : {};
   
         if (!res.ok) {
             const errorMessage = await res.text();
             console.error(`Error: ${res.status} - ${errorMessage}`);
             throw new Error(errorMessage);
         }
+        
 
-        // Save the response locally for display in User.vue
+    
         let responses = JSON.parse(localStorage.getItem('responses')) || [];
-        responses.push(reqbody);
+        responses.push(jsonData.updatedItem);
         localStorage.setItem('responses', JSON.stringify(responses));
        
-        console.log("Response recorded successfully!");
+       console.log(jsonData.updatedItem)
+
     } catch (error) {
         console.error("Error in handleResponse:", error);
     }
 },
 
   async toggleSleep( status ) {
-  
       const reqbody = {
         userId: this.userId,
         sleep: status ? "寝た" : "起きた",
@@ -161,8 +165,7 @@ async handleResponse(message, value) {
           const errorMessage = await res.text();
           throw new Error(errorMessage);
         }
-        
-        
+      
         
         console.log("Update successful!");
       } catch (error) {
@@ -187,8 +190,8 @@ async handleResponse(message, value) {
 
 .time-block {
   background-color: lightgreen;
-  width: 200px;
-  height: 200px;
+  width:  350px;
+  height: 350px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -196,6 +199,26 @@ async handleResponse(message, value) {
   border: none;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.time-block h3 {
+  font-size: 35px; 
+}
+.time-block p {
+  font-size: 70px; 
+  font-weight: bold;
+  color: #333;
+}
+.ui.green.label {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 40px;
+  font-size: 50px!important; 
+  font-weight: bold;
+  display: inline-block;
+  margin: 5px 0;
+  text-align: center;
 }
 
 .button-group {
@@ -207,13 +230,15 @@ async handleResponse(message, value) {
 .ui.green.button {
   background-color: #4caf50;
   color: white;
-  font-size: 16px;
+  font-size: 25px;
 }
+
+
 
 .ui.blue.button {
   background-color: #2196f3;
   color: white;
-  font-size: 16px;
+  font-size: 25px;
 }
 
 .ui.green.button:hover {
@@ -264,7 +289,7 @@ async handleResponse(message, value) {
 }
 
 .text {
-  font-size: 60px !important; /* メッセージのフォントサイズを大きくする */
+  font-size: 60px !important; 
   color: #333 !important;
 }
 
@@ -288,6 +313,8 @@ async handleResponse(message, value) {
 .yes-button {
   background-color: #4caf50;
   color: white;
+  font-size: 25px;
+   padding: 25px 40px; 
 }
 
 .yes-button:hover {
@@ -297,11 +324,15 @@ async handleResponse(message, value) {
 .no-button {
   background-color: #f44336;
   color: white;
+  font-size: 25px;
+   padding: 25px 40px; 
 }
 
 .no-button:hover {
   background-color: #d32f2f;
 }
+
+
 </style>
 
 

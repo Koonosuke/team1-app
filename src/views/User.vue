@@ -7,12 +7,11 @@
           <div class="message-content">
             <p class="text">{{ response.messageContent }}</p>
             <span class="ui green label">{{ response.reservationTime }}</span>
-            <p v-if="response.elderResponse" class="responded-at">
-              回答日時: {{ response.respondedAt }}
+            <p  class="responded-at">
+              回答日時: {{ formatDateToJST(response.respondedAt) }}
             </p>
           </div>
           <div class="response-status">
-        
             <span class="ui label">{{ getElderResponse(response.elderResponse) }}</span>
           </div>
         </li>
@@ -22,8 +21,6 @@
 </template>
 
 <script>
-  
-  import { baseUrl } from "@/assets/config.js";
 export default {
   name: 'User',
   data() {
@@ -32,40 +29,26 @@ export default {
     };
   },
   created() {
-    this.loadResponses();
+    const storedResponses = localStorage.getItem('responses');
+    this.responses = storedResponses ? JSON.parse(storedResponses) : [];
   },
   methods: {
     getElderResponse(value) {
       return value ? 'はい' : 'いいえ';
     },
-    async updateResponse(response, elderResponse) {
-      try {
-        const responseData = await fetch(baseUrl + '/message/elder', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            familycode: response.familycode,
-            sentAt: response.sentAt,
-            respondedAt: response.respondedAt,
-            elderResponse,
-          }),
-        });
-
-        const result = await responseData.json();
-        if (responseData.ok) {
-          this.loadResponses();
-        } else {
-          console.error('Failed to update response:', result.message);
-        }
-      } catch (error) {
-        console.error('Error updating response:', error);
-      }
-    },
-    loadResponses() {
-      const storedResponses = localStorage.getItem('responses');
-      this.responses = storedResponses ? JSON.parse(storedResponses) : [];
+    formatDateToJST(dateString) {
+      const date = new Date(dateString);
+      const options = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        timeZone: 'Asia/Tokyo'
+      };
+      return date.toLocaleString('ja-JP', options);
     }
   }
 };
@@ -98,8 +81,8 @@ export default {
   position: relative;
   max-width: 80%;
   display: flex;
-  justify-content: space-between; 
-  align-items: center; 
+  justify-content: space-between; /* Ensure the content is spread out */
+  align-items: center; /* Center content vertically */
 }
 
 .comment .message-content {
@@ -131,8 +114,7 @@ export default {
 
 .comment .response-status {
   display: flex;
-  justify-content: flex-end; 
-
+  justify-content: flex-end; /* Aligns the status label to the right */
 }
 
 .comment .response-status .ui.label {
@@ -151,5 +133,4 @@ export default {
   border-style: solid;
   border-color: transparent transparent #f1f1f1 transparent;
 }
-
 </style>

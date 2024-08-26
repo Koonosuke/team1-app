@@ -25,6 +25,7 @@
             </div>
           </div>
           <button class="ui green button" type="submit">
+            <i class="user circle icon"></i>
             登録
           </button>
         </form>
@@ -73,12 +74,14 @@ export default {
         }
         
         this.$router.push({ 
-          name: 'HomeElder'
+          name: 'Home'
         });
         
 
         window.localStorage.setItem("userId", jsonData.userId);
         window.localStorage.setItem("familycode", jsonData.familycode);
+        window.localStorage.removeItem("responses");
+
 
 
         // 成功時の処理

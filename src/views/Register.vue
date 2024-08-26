@@ -8,8 +8,14 @@
       </h1>
       <label>どちらで登録しますか</label>
       <label>初めての人は見守り人から登録してください</label>
-      <button @click="goToGardianRegiter">見守り人</button>
-      <button @click="goToElderRegiter">高齢者</button>
+      <button @click="goToGardianRegiter">
+        <i class="child icon"></i>
+        見守り人
+      </button>
+      <button @click="goToElderRegiter">
+        <i class="blind icon"></i>
+        高齢者
+      </button>
     </div>
   </div>
 </template>

@@ -9,8 +9,7 @@
       <!-- エラーメッセージ用 -->
       <p class="ui negative message" v-if="errorMsg">
         <i class="close icon" @click="clearMsg('error')"></i>
-        <span class="header">エラーが発生しました！</span>
-        {{ errorMsg }}
+        <span class="header">リマインダーがまだ設定されていません</span>
       </p>
 
       <!-- 成功メッセージ用 -->
@@ -40,11 +39,14 @@
                 >
                   削除
                 </button>
-                <p class="text">
-                  {{ message.messageContent }}
-                </p>
-                <span v-if="message.messageContent" class="ui green label">{{ message.reservationTime }}</span>
-                <div class="ui divider"></div>
+                <div class="contents">
+                  <span v-if="message.messageContent" class="ui green label">{{ message.reservationTime }}</span>
+                  <div class="ui divider"></div>
+                  <p class="text">
+                    {{ message.messageContent }}
+                  </p>
+                  
+                </div>
               </div>
             </li>
           </template>
@@ -120,7 +122,7 @@ export default {
         this.messages = jsonData ?? [];
 
       } catch (e) {
-        this.errorMsg = `記事一覧取得時にエラーが発生しました: ${e}`;
+        this.errorMsg = `リマインダーがまだ設定されていません: ${e}`;
       } finally {
         this.isCallingApi = false;
       }
@@ -176,5 +178,25 @@ export default {
   margin-bottom: 10px;
   padding: 0;
   max-width: 100%;
+}
+
+.contents {
+  display: flex;
+
+  align-itmes: center;
+}
+
+.contents span {
+  width: 80px;
+  margin-right: auto;
+}
+
+.contents .text {
+  display: block;
+  width: 100%;
+  text-aligin: start;
+  margin-right: 50px;
+  font-size: 20px;
+  font-weight: bold;
 }
 </style>

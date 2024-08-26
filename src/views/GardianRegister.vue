@@ -25,6 +25,7 @@
             </div>
           </div>
           <button class="ui green button" type="submit">
+            <i class="user circle icon"></i>
             新規登録
           </button>
         </form>
@@ -79,10 +80,8 @@ export default {
         
         window.localStorage.setItem("userId", jsonData.userId)
         window.localStorage.setItem("familycode", jsonData.familycode)
+        window.localStorage.removeItem("responses");
 
-        // 成功時の処理
-        window.localStorage.setItem("userId", jsonData.userId);
-        window.localStorage.setItem("familycode", jsonData.familycode);
         console.log(jsonData);
       } catch (e) {
         console.error(e);

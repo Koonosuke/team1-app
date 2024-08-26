@@ -3,7 +3,7 @@
     <div class="ui message">
       <h2>Family Code</h2>
       <p>以下のFamily Codeは記録して覚えてください。</p>
-      <p>高齢者端末での登録を進めてください</p>
+      <p>下のボタンから高齢者の登録を進めてください</p>
       <p><h2>{{ familyCode }}</h2></p>
     </div>
     <router-link :to="{ name: 'ElderRegister', query: { familycode: familyCode } }" class="ui button">
